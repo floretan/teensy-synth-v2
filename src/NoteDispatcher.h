@@ -5,28 +5,19 @@ private:
   NoteCallback noteOnCallback;
   NoteCallback noteOffCallback;
 public:
-  NoteDispatcher();
-  ~NoteDispatcher();
+  NoteDispatcher(){};
+  ~NoteDispatcher(){};
 
-  void setNoteOnCallback(NoteCallback callback);
-  void setNoteOffCallback(NoteCallback callback);
+  void setNoteOnCallback(NoteCallback callback) {
+    this->noteOnCallback = callback;
+  }
+  void setNoteOffCallback(NoteCallback callback) {
+    this->noteOffCallback = callback;
+  };
 
   void pressNote(int note, int velocity);
   void releaseNote(int note);
 };
-
-NoteDispatcher::NoteDispatcher() {
-}
-
-NoteDispatcher::~NoteDispatcher() {
-}
-
-void NoteDispatcher::setNoteOnCallback(NoteCallback callback) {
-  this->noteOnCallback = callback;
-}
-void NoteDispatcher::setNoteOffCallback(NoteCallback callback) {
-  this->noteOffCallback = callback;
-}
 
 void NoteDispatcher::pressNote(int note, int velocity) {
   // Simply play the first voice.
