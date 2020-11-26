@@ -30,9 +30,30 @@ void test_note_dispatcher(void) {
   TEST_ASSERT_EQUAL(playingNotes[1], 0);
 }
 
+void test_note_dispatcher_poly(void) {
+  NoteDispatcher nd = NoteDispatcher();
+
+  nd.setNoteOnCallback(myCustomNoteOnCallback);
+  nd.setNoteOffCallback(myCustomNoteOffCallback);
+
+  nd.pressNote(1, 123);
+  TEST_ASSERT_EQUAL(playingNotes[1], 123);
+  TEST_ASSERT_EQUAL(playingNotes[2], 0);
+  nd.pressNote(2, 124);
+  TEST_ASSERT_EQUAL(playingNotes[1], 123);
+  TEST_ASSERT_EQUAL(playingNotes[2], 124);
+  nd.releaseNote(1);
+  TEST_ASSERT_EQUAL(playingNotes[1], 0);
+  TEST_ASSERT_EQUAL(playingNotes[2], 124);
+  nd.releaseNote(2);
+  TEST_ASSERT_EQUAL(playingNotes[1], 0);
+  TEST_ASSERT_EQUAL(playingNotes[2], 0);
+}
+
 int main(int argc, char **argv) {
     UNITY_BEGIN();
     RUN_TEST(test_note_dispatcher);
+    RUN_TEST(test_note_dispatcher_poly);
     UNITY_END();
 
     return 0;
