@@ -11,8 +11,8 @@ public:
   void setNoteOnCallback(NoteCallback callback);
   void setNoteOffCallback(NoteCallback callback);
 
-  void noteOn(int note, int velocity);
-  void noteOff(int note);
+  void pressNote(int note, int velocity);
+  void releaseNote(int note);
 };
 
 NoteDispatcher::NoteDispatcher() {
@@ -28,12 +28,12 @@ void NoteDispatcher::setNoteOffCallback(NoteCallback callback) {
   this->noteOffCallback = callback;
 }
 
-void NoteDispatcher::noteOn(int note, int velocity) {
+void NoteDispatcher::pressNote(int note, int velocity) {
   // Simply play the first voice.
   this->noteOnCallback(0, note, velocity);
 }
 
-void NoteDispatcher::noteOff(int note) {
+void NoteDispatcher::releaseNote(int note) {
   // Simply stop the first voice.
   this->noteOffCallback(0, note, 0);
 }

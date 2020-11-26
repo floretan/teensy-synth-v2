@@ -23,10 +23,10 @@ void test_note_dispatcher(void) {
   nd.setNoteOnCallback(myCustomNoteOnCallback);
   nd.setNoteOffCallback(myCustomNoteOffCallback);
 
-  nd.noteOn(1, 123);
+  nd.pressNote(1, 123);
   TEST_ASSERT_EQUAL(playingNotes[1], 123);
 
-  nd.noteOff(1);
+  nd.releaseNote(1);
   TEST_ASSERT_EQUAL(playingNotes[1], 0);
 }
 
