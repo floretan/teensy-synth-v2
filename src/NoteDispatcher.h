@@ -2,6 +2,11 @@
 
 using namespace std;
 
+enum NoteDispatcherMode {
+  POLYPHONIC,
+  MONOPHONIC,
+};
+
 class NoteDispatcher {
   using NoteCallback = void (*)(int voice, int note, int velocity);
 
@@ -20,6 +25,8 @@ private:
   NoteCallback noteOnCallback;
   NoteCallback noteOffCallback;
 
+  NoteDispatcherMode mode = NoteDispatcherMode::POLYPHONIC;
+
   bool isNotePressed(int note) {
     for (NoteDispatcher::NoteEntry& entry : this->entries) {
       if (entry.note == note && entry.isPressed) {
@@ -31,6 +38,10 @@ private:
   }
 
   int getNextVoice(int note) {
+    if (this->mode == NoteDispatcherMode::MONOPHONIC) {
+      return 0;
+    }
+
     // Find the next available voice index that isn't playing.
     for (int voiceIndex = 0; voiceIndex < this->voiceCount; voiceIndex++) {
       bool isUsed = false;
@@ -48,10 +59,10 @@ private:
     }
 
     // Nothing available, use the voice of the oldest used entry.
-    auto entry = this->entries.begin();
-    entry->isPlaying = false;
-    this->noteOffCallback(entry->voiceIndex, entry->note, 0);
-    return entry->voiceIndex;
+    auto entry = this->entries.front();
+    entry.isPlaying = false;
+    this->noteOffCallback(entry.voiceIndex, entry.note, 0);
+    return entry.voiceIndex;
   }
 
 public:
@@ -69,8 +80,9 @@ public:
     this->noteOffCallback = callback;
   };
 
-  void setMode(NoteDispatcher::Mode m) {
+  void setMode(NoteDispatcherMode m) {
     this->mode = m;
+    this->entries.clear();
   };
 
   void pressNote(int note, int velocity);
@@ -82,6 +94,13 @@ void NoteDispatcher::pressNote(int note, int velocity) {
     return;
   }
 
+  if (this->mode == NoteDispatcherMode::MONOPHONIC && this->entries.size() > 0) {
+    // Stop the previously playing note.
+    auto lastEntry = this->entries.back();
+    lastEntry.isPlaying = false;
+    this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity);
+  }
+
   NoteDispatcher::NoteEntry entry = NoteDispatcher::NoteEntry();
   entry.note = note;
   entry.velocity = velocity;
@@ -90,8 +109,6 @@ void NoteDispatcher::pressNote(int note, int velocity) {
   entry.isPlaying = true;
 
   this->entries.push_back(entry);
-
-  // Simply play the first voice.
   this->noteOnCallback(entry.voiceIndex, note, velocity);
 }
 
@@ -105,5 +122,12 @@ void NoteDispatcher::releaseNote(int note) {
     else {
       ++it;
     }
+  }
+
+  if (this->mode == NoteDispatcherMode::MONOPHONIC) {
+    // Go back to playing last pressed note.
+    auto lastEntry = this->entries.back();
+    lastEntry.isPlaying = true;
+    this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity);
   }
 }
