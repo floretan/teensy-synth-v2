@@ -2,6 +2,8 @@
 #define note_dispatcher_H
 
 #include <list>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -90,6 +92,19 @@ public:
 
   void pressNote(int note, int velocity);
   void releaseNote(int note);
+
+  string debugState() {
+    stringstream output;
+
+    for (NoteDispatcher::NoteEntry& entry : this->entries) {
+      output << "Voice: " << entry.voiceIndex;
+      output << " Note: " << entry.note;
+      output << " Velocity: " << entry.velocity;
+      output << "\n";
+    }
+
+    return output.str();
+  }
 };
 
 void NoteDispatcher::pressNote(int note, int velocity) {
