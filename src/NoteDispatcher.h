@@ -1,3 +1,6 @@
+#ifndef note_dispatcher_H
+#define note_dispatcher_H
+
 #include <list>
 
 using namespace std;
@@ -131,3 +134,5 @@ void NoteDispatcher::releaseNote(int note) {
     this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity);
   }
 }
+
+#endif
