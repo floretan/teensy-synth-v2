@@ -54,15 +54,12 @@ public:
     this->patchCords.push_back(new AudioConnection(this->finalVoiceMixer, 0, this->filter, 0));
 
     this->patchCords.push_back(new AudioConnection(this->filter, 0, this->reverb, 0));
+
     this->patchCords.push_back(new AudioConnection(this->filter, 0, this->left, 0));
-    this->left.gain(0, 1);
     this->patchCords.push_back(new AudioConnection(this->reverb, 0, this->left, 1));
-    this->left.gain(1, 1);
 
     this->patchCords.push_back(new AudioConnection(this->filter, 0, this->right, 0));
-    this->right.gain(0, 1);
     this->patchCords.push_back(new AudioConnection(this->reverb, 1, this->right, 1));
-    this->right.gain(1, 1);
 
     this->patchCords.push_back(new AudioConnection(this->left, 0, this->output, 0));
     this->patchCords.push_back(new AudioConnection(this->right, 0, this->output, 1));
