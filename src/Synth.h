@@ -40,14 +40,17 @@ public:
 
     // Define the individual synth voices.
     for (int i = 0; i < voiceCount; i++) {
+      int voiceMixerIndex = i / 4;
       if (i % 4 == 0) {
+        // Add a new 4-voice mixer.
         this->voiceMixers.push_back(new AudioMixer4());
-        this->patchCords.push_back(new AudioConnection(*(this->voiceMixers[i/4]), 0, this->finalVoiceMixer, i/4));
+        this->patchCords.push_back(new AudioConnection(*(this->voiceMixers[voiceMixerIndex]), 0, this->finalVoiceMixer, voiceMixerIndex));
+        this->finalVoiceMixer.gain(voiceMixerIndex, 0.25);
       }
       auto voice = new Voice(this->modulation);
       voices.push_back(voice);
-      this->patchCords.push_back(new AudioConnection(voice->env, 0, *(this->voiceMixers[i/4]), i % 4));
-      this->voiceMixers[i/4]->gain(i, 0.25);
+      this->patchCords.push_back(new AudioConnection(voice->env, 0, *(this->voiceMixers[voiceMixerIndex]), i % 4));
+      this->voiceMixers[voiceMixerIndex]->gain(i % 4, 0.25);
     }
 
     // Connect the mixed voices to the filter.
