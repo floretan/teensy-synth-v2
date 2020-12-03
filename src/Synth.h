@@ -37,7 +37,7 @@ private:
     for (auto voice : this->voices) {
       float baseFrequency = tune_frequencies2_PGM[voice->currentNote];
 
-      voice->osc1.frequency(baseFrequency);
+      voice->osc1.frequency(baseFrequency / this->detuneAmount);
       voice->osc2.frequency(baseFrequency * this->detuneAmount);
     }
   }
@@ -93,8 +93,9 @@ public:
     this->voices[voice]->env.noteOff();
   }
 
-  void setDetune() {
-    this->detuneAmount = 0.01;
+  void setDetune(float amount) {
+    this->detuneAmount = amount;
+    this->updateOscillatorParameters();
   }
 };
 
