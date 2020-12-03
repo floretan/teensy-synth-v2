@@ -5,7 +5,7 @@
 #include "Frequencies.h"
 #include <vector>
 
-#define voiceCount 4
+#define voiceCount 16
 #define freqModRange 4
 
 using namespace std;
@@ -17,9 +17,11 @@ private:
   AudioSynthWaveform lfo;
   AudioMixer4 modulation;
 
+  // Mix 16 voices down to 4 mixers which are then mixed together.
   vector<Voice*> voices;
+  vector<AudioMixer4*> voiceMixers;
 
-  AudioMixer4 voicesMixer;
+  AudioMixer4 finalVoiceMixer;
   AudioFilterStateVariable filter;
   AudioEffectMultiply ampMod;
   AudioEffectFreeverbStereo reverb;
@@ -38,14 +40,18 @@ public:
 
     // Define the individual synth voices.
     for (int i = 0; i < voiceCount; i++) {
+      if (i % 4 == 0) {
+        this->voiceMixers.push_back(new AudioMixer4());
+        this->patchCords.push_back(new AudioConnection(*(this->voiceMixers[i/4]), 0, this->finalVoiceMixer, i/4));
+      }
       auto voice = new Voice(this->modulation);
       voices.push_back(voice);
-      this->patchCords.push_back(new AudioConnection(voice->env, 0, this->voicesMixer, i));
-      this->voicesMixer.gain(i, 0.25);
+      this->patchCords.push_back(new AudioConnection(voice->env, 0, *(this->voiceMixers[i/4]), i % 4));
+      this->voiceMixers[i/4]->gain(i, 0.25);
     }
 
-    // Connect the output to the filter.
-    this->patchCords.push_back(new AudioConnection(this->voicesMixer, 0, this->filter, 0));
+    // Connect the mixed voices to the filter.
+    this->patchCords.push_back(new AudioConnection(this->finalVoiceMixer, 0, this->filter, 0));
 
     this->patchCords.push_back(new AudioConnection(this->filter, 0, this->reverb, 0));
     this->patchCords.push_back(new AudioConnection(this->filter, 0, this->left, 0));
