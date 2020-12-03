@@ -18,13 +18,28 @@ void midiNoteOff(byte channel, byte note, byte velocity) {
   nd.releaseNote(note);
 }
 void midiControlChange(byte channel, byte control, byte value) {
-  if (control == 64) {
-    if (value == 127) {
+  switch (control) {
+    // Mod wheel.
+    case 1:
+      synth.setDetune(1.0 + 0.01 * value / 127);
+      break;
+
+    // Sustain pedal.
+    case 64:
+      if (value == 127) {
       nd.pressSustainPedal();
-    }
-    else {
-      nd.releaseSustainPedal();
-    }
+      }
+      else {
+        nd.releaseSustainPedal();
+      }
+      break;
+
+  default:
+    Serial.print("CC: ");
+    Serial.print(control);
+    Serial.print(":");
+    Serial.println(value);
+    break;
   }
 }
 
