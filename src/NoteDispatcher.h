@@ -24,7 +24,7 @@ class NoteDispatcher {
   };
 
 private:
-  int voiceCount = 8;
+  int voiceCount = 16;
   list<NoteDispatcher::NoteEntry> entries;
 
   NoteCallback noteOnCallback;
