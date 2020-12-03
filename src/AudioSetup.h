@@ -9,6 +9,7 @@ void audio_setup() {
   AudioMemory(32);
   audioShield.enable();
   audioShield.volume(0.5);
+  audioShield.surroundSoundEnable();
 }
 
 #endif
