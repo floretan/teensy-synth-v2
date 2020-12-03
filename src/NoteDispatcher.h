@@ -26,6 +26,7 @@ class NoteDispatcher {
 private:
   int voiceCount = 16;
   list<NoteDispatcher::NoteEntry> entries;
+  bool isSustainPressed = false;
 
   NoteCallback noteOnCallback;
   NoteCallback noteOffCallback;
@@ -93,6 +94,24 @@ public:
   void pressNote(int note, int velocity);
   void releaseNote(int note);
 
+  void pressSustainPedal() {
+    this->isSustainPressed = true;
+  };
+  void releaseSustainPedal() {
+    this->isSustainPressed = false;
+
+    // Remove any key which isn't currently pressed.
+    for (auto entry = this->entries.begin(); entry != this->entries.end(); ) {
+      if (!entry->isPressed) {
+        this->noteOffCallback(entry->voiceIndex, entry->note, 0);
+        this->entries.erase(entry++);
+      }
+      else {
+        ++entry;
+      }
+    }
+  };
+
   string debugState() {
     stringstream output;
 
@@ -100,6 +119,7 @@ public:
       output << "Voice: " << entry.voiceIndex;
       output << " Note: " << entry.note;
       output << " Velocity: " << entry.velocity;
+      output << " Pressed: " << entry.isPressed;
       output << "\n";
     }
 
@@ -131,14 +151,20 @@ void NoteDispatcher::pressNote(int note, int velocity) {
 }
 
 void NoteDispatcher::releaseNote(int note) {
-  for (auto it = this->entries.begin(); it != this->entries.end(); ) {
-    auto entry = *it;
-    if (entry.note == note) {
-      this->noteOffCallback(entry.voiceIndex, entry.note, 0);
-      this->entries.erase(it++);
+  for (auto entry = this->entries.begin(); entry != this->entries.end(); ) {
+    if (entry->note == note) {
+      if (this->isSustainPressed) {
+        // Simply mark the note as not pressed.
+        entry->isPressed = false;
+        entry++;
+      }
+      else {
+        this->noteOffCallback(entry->voiceIndex, entry->note, 0);
+        this->entries.erase(entry++);
+      }
     }
     else {
-      ++it;
+      ++entry;
     }
   }
 

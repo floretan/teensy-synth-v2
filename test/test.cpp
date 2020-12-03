@@ -45,6 +45,20 @@ void test_note_dispatcher_poly(void) {
   nd.releaseNote(12);
   nd.releaseNote(13);
   nd.releaseNote(14);
+
+  // Test sustain pedal.
+  nd.pressNote(12, 102);
+  nd.pressSustainPedal();
+  nd.pressNote(13, 103);
+  nd.releaseNote(13);
+  TEST_ASSERT_EQUAL(playingNotes[0], 102);
+  TEST_ASSERT_EQUAL(playingNotes[1], 103);
+  nd.releaseNote(12);
+  TEST_ASSERT_EQUAL(playingNotes[0], 102);
+  TEST_ASSERT_EQUAL(playingNotes[1], 103);
+  nd.releaseSustainPedal();
+  TEST_ASSERT_EQUAL(playingNotes[0], 0);
+  TEST_ASSERT_EQUAL(playingNotes[1], 0);
 }
 
 void test_note_dispatcher_mono(void) {

@@ -17,6 +17,16 @@ void midiNoteOn(byte channel, byte note, byte velocity) {
 void midiNoteOff(byte channel, byte note, byte velocity) {
   nd.releaseNote(note);
 }
+void midiControlChange(byte channel, byte control, byte value) {
+  if (control == 64) {
+    if (value == 127) {
+      nd.pressSustainPedal();
+    }
+    else {
+      nd.releaseSustainPedal();
+    }
+  }
+}
 
 // Callback to handle notes being played and released.
 void playNote(int voice, int note, int velocity) {
@@ -27,9 +37,12 @@ void releaseNote(int voice, int note, int velocity) {
 }
 
 void setup(void) {
+  Serial.begin(9600);
+
   // Setup midi note callbacks.
   usbMIDI.setHandleNoteOn(midiNoteOn);
   usbMIDI.setHandleNoteOff(midiNoteOff);
+  usbMIDI.setHandleControlChange(midiControlChange);
 
   // Setup callbacks for the synth.
   nd.setNoteOnCallback(playNote);
