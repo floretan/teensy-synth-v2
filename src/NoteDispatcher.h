@@ -112,7 +112,7 @@ void NoteDispatcher::pressNote(int note, int velocity) {
     return;
   }
 
-  if (this->mode == NoteDispatcherMode::MONOPHONIC && this->entries.size() > 0) {
+  if (this->mode == NoteDispatcherMode::MONOPHONIC && !this->entries.empty()) {
     // Stop the previously playing note.
     auto lastEntry = this->entries.back();
     lastEntry.isPlaying = false;
@@ -144,7 +144,7 @@ void NoteDispatcher::releaseNote(int note) {
 
   if (this->mode == NoteDispatcherMode::MONOPHONIC) {
     // Go back to playing last pressed note.
-    if (this->entries.size() > 0) {
+    if (!this->entries.empty()) {
       auto lastEntry = this->entries.back();
       lastEntry.isPlaying = true;
       this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity);
