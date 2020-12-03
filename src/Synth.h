@@ -12,6 +12,8 @@ using namespace std;
 
 class Synth {
 private:
+  float detuneAmount = 1.0;
+
   AudioSynthWaveformDc noteInput;
   AudioSynthWaveformDc pitchBend; 
   AudioSynthWaveform lfo;
@@ -30,6 +32,15 @@ private:
   AudioOutputI2S output;
 
   vector<AudioConnection*> patchCords;
+
+  void updateOscillatorParameters() {
+    for (auto voice : this->voices) {
+      float baseFrequency = tune_frequencies2_PGM[voice->currentNote];
+
+      voice->osc1.frequency(baseFrequency);
+      voice->osc2.frequency(baseFrequency * this->detuneAmount);
+    }
+  }
 
 public:
   Synth() {
@@ -72,16 +83,18 @@ public:
   };
 
   void playNote(int voice, int note, int velocity) {
-    float frequency = tune_frequencies2_PGM[note];
-
-    this->voices[voice]->osc1.frequency(frequency);
-    this->voices[voice]->osc2.frequency(frequency);
+    this->voices[voice]->currentNote = note;
+    this->updateOscillatorParameters();
     this->voices[voice]->env.noteOn();
 
-    float freqMod = (((note - 64) / 12.0) / freqModRange);
+    //float freqMod = (((note - 64) / 12.0) / freqModRange);
   }
   void releaseNote(int voice, int note, int velocity) {
     this->voices[voice]->env.noteOff();
+  }
+
+  void setDetune() {
+    this->detuneAmount = 0.01;
   }
 };
 

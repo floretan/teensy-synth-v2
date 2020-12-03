@@ -10,6 +10,9 @@ class Voice {
 private:
   vector<AudioConnection*> patchCords;
 public:
+  // Keep track of the current midi note.
+  int currentNote = 0;
+
   // These objects are public, so we can access them directly from the synth object.
   AudioSynthWaveformModulated osc1;
   AudioSynthWaveformModulated osc2;
