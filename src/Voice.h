@@ -19,13 +19,7 @@ public:
   AudioMixer4 mixer;
   AudioEffectEnvelope env;
 
-  Voice(AudioMixer4 modulationInput) {
-    // Connect the frequency modulation input to the oscillators.
-    this->patchCords.push_back(new AudioConnection(modulationInput, 0, this->osc1, 0));
-    this->patchCords.push_back(new AudioConnection(modulationInput, 0, this->osc1, 1));
-    this->patchCords.push_back(new AudioConnection(modulationInput, 0, this->osc2, 0));
-    this->patchCords.push_back(new AudioConnection(modulationInput, 0, this->osc2, 1));
-
+  Voice() {
     // Start oscillators.
     this->osc1.begin(1.0, 880, WAVEFORM_SINE);
     this->osc2.begin(1.0, 100, WAVEFORM_SAWTOOTH);

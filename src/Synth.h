@@ -58,8 +58,12 @@ public:
         this->patchCords.push_back(new AudioConnection(*(this->voiceMixers[voiceMixerIndex]), 0, this->finalVoiceMixer, voiceMixerIndex));
         this->finalVoiceMixer.gain(voiceMixerIndex, 0.25);
       }
-      auto voice = new Voice(this->modulation);
+      auto voice = new Voice();
       voices.push_back(voice);
+      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc1, 0));
+      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc1, 1));
+      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc2, 0));
+      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc2, 1));
       this->patchCords.push_back(new AudioConnection(voice->env, 0, *(this->voiceMixers[voiceMixerIndex]), i % 4));
       this->voiceMixers[voiceMixerIndex]->gain(i % 4, 0.25);
     }
