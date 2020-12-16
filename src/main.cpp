@@ -77,4 +77,6 @@ void loop() {
      delay(1);
   }
   keyboard.update();
+
+  analogWrite(LED_BUILTIN, 255 * pow(synth.getLfoLevel(), 2));
 }

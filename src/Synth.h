@@ -17,6 +17,9 @@ private:
   AudioSynthWaveformDc noteInput;
   AudioSynthWaveformDc pitchBend; 
   AudioSynthWaveform lfo;
+  AudioSynthWaveform lfoOffset;
+  AudioAnalyzePeak lfoPeak;
+  float lastLfoPeakLevel = 0;
   AudioMixer4 modulation;
 
   // Mix 16 voices down to 4 mixers which are then mixed together.
@@ -108,6 +111,13 @@ public:
   void setDetune(float amount) {
     this->detuneAmount = amount;
     this->updateOscillatorParameters();
+  }
+
+  float getLfoLevel() {
+    if (this->lfoPeak.available()) {
+      this->lastLfoPeakLevel = this->lfoPeak.read();
+    }
+    return this->lastLfoPeakLevel;
   }
 };
 
