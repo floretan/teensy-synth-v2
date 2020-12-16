@@ -4,9 +4,11 @@
 #include <SPI.h>
 
 #include "AudioSetup.h"
+#include "Keyboard.h"
 #include "NoteDispatcher.h"
 #include "Synth.h"
 
+Keyboard keyboard = Keyboard();
 NoteDispatcher nd = NoteDispatcher();
 Synth synth = Synth();
 
@@ -64,12 +66,15 @@ void setup(void) {
   nd.setNoteOffCallback(releaseNote);
 
   audio_setup();
+
+  keyboard.setup();
+  keyboard.setNoteOnCallback(midiNoteOn);
+  keyboard.setNoteOffCallback(midiNoteOff);
 }
 
 void loop() {
    while (usbMIDI.read()) {
      delay(1);
   }
+  keyboard.update();
 }
-
-
