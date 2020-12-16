@@ -10,6 +10,7 @@ void audio_setup() {
   audioShield.enable();
   audioShield.volume(0.5);
   audioShield.surroundSoundEnable();
+  audioShield.lineOutLevel(14);
 }
 
 #endif
