@@ -27,6 +27,8 @@ private:
   AudioFilterStateVariable filter;
   AudioEffectMultiply ampMod;
   AudioEffectFreeverbStereo reverb;
+  AudioMixer4 delayMixer;
+  AudioEffectDelay delay;
   AudioMixer4 left;
   AudioMixer4 right;
   AudioOutputI2S output;
@@ -71,13 +73,19 @@ public:
     // Connect the mixed voices to the filter.
     this->patchCords.push_back(new AudioConnection(this->finalVoiceMixer, 0, this->filter, 0));
 
-    this->patchCords.push_back(new AudioConnection(this->filter, 0, this->reverb, 0));
+    this->patchCords.push_back(new AudioConnection(this->filter, 0, this->delayMixer, 0));
+    this->patchCords.push_back(new AudioConnection(this->delayMixer, 0, this->delay, 0));
+    this->patchCords.push_back(new AudioConnection(this->delay, 0, this->delayMixer, 1));
 
-    this->patchCords.push_back(new AudioConnection(this->filter, 0, this->left, 0));
+    this->patchCords.push_back(new AudioConnection(this->delayMixer, 0, this->reverb, 0));
+
+    this->patchCords.push_back(new AudioConnection(this->delayMixer, 0, this->left, 0));
     this->patchCords.push_back(new AudioConnection(this->reverb, 0, this->left, 1));
+    this->patchCords.push_back(new AudioConnection(this->delay, 0, this->left, 2));
 
-    this->patchCords.push_back(new AudioConnection(this->filter, 0, this->right, 0));
+    this->patchCords.push_back(new AudioConnection(this->delayMixer, 0, this->right, 0));
     this->patchCords.push_back(new AudioConnection(this->reverb, 1, this->right, 1));
+    this->patchCords.push_back(new AudioConnection(this->delay, 0, this->right, 2));
 
     this->patchCords.push_back(new AudioConnection(this->left, 0, this->output, 0));
     this->patchCords.push_back(new AudioConnection(this->right, 0, this->output, 1));
