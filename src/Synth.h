@@ -5,7 +5,7 @@
 #include "Frequencies.h"
 #include <vector>
 
-#define voiceCount 16
+#define voiceCount 8
 #define freqModRange 4
 
 using namespace std;
@@ -61,7 +61,7 @@ public:
         // Add a new 4-voice mixer.
         this->voiceMixers.push_back(new AudioMixer4());
         this->patchCords.push_back(new AudioConnection(*(this->voiceMixers[voiceMixerIndex]), 0, this->finalVoiceMixer, voiceMixerIndex));
-        this->finalVoiceMixer.gain(voiceMixerIndex, 0.25);
+        this->finalVoiceMixer.gain(voiceMixerIndex, 4.0 / (voiceCount));
       }
       auto voice = new Voice();
       voices.push_back(voice);

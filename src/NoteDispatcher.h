@@ -24,7 +24,7 @@ class NoteDispatcher {
   };
 
 private:
-  int voiceCount = 16;
+  int voiceCount = 8;
   list<NoteDispatcher::NoteEntry> entries;
   bool isSustainPressed = false;
 
