@@ -6,7 +6,7 @@
 AudioControlSGTL5000 audioShield;
 
 void audio_setup() {
-  AudioMemory(32);
+  AudioMemory(128);
   audioShield.enable();
   audioShield.volume(0.5);
   audioShield.surroundSoundEnable();
