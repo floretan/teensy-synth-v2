@@ -30,6 +30,7 @@ private:
   AudioMixer4 finalVoiceMixer;
   AudioFilterStateVariable filter;
   AudioEffectMultiply ampMod;
+  AudioEffectBitcrusher bitcrusher;
   AudioEffectPlateReverb reverb;
   AudioMixer4 delayMixer;
   AudioEffectDelay delay;
@@ -74,8 +75,12 @@ public:
       this->voiceMixers[voiceMixerIndex]->gain(i % 4, 0.25);
     }
 
-    // Connect the mixed voices to the filter.
-    this->patchCords.push_back(new AudioConnection(this->finalVoiceMixer, 0, this->filter, 0));
+    // Connect the mixed voices to the bitcrusher.
+    this->patchCords.push_back(new AudioConnection(this->finalVoiceMixer, 0, this->bitcrusher, 0));
+
+    // The bitcrusher is very harsh, put it before the filter.
+    this->patchCords.push_back(new AudioConnection(this->bitcrusher, 0, this->filter, 0));
+    this->bitcrusher.bits(16);
 
     this->patchCords.push_back(new AudioConnection(this->filter, 0, this->delayMixer, 0));
     this->patchCords.push_back(new AudioConnection(this->delayMixer, 0, this->delay, 0));
