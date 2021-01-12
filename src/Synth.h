@@ -4,6 +4,7 @@
 #include "Voice.h"
 #include "Frequencies.h"
 #include <vector>
+#include "effect_platervbstereo.h"
 
 #define voiceCount 8
 #define freqModRange 4
@@ -29,7 +30,7 @@ private:
   AudioMixer4 finalVoiceMixer;
   AudioFilterStateVariable filter;
   AudioEffectMultiply ampMod;
-  AudioEffectFreeverbStereo reverb;
+  AudioEffectPlateReverb reverb;
   AudioMixer4 delayMixer;
   AudioEffectDelay delay;
   AudioMixer4 left;
