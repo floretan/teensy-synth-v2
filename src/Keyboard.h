@@ -3,12 +3,12 @@
 
 #include "Arduino.h"
 
-const int inputs[] = {24, 25, 26, 27, 28, 29, 30, 31};
+const int inputs[] = {25, 10, 24, 8, 7, 6, 5, 4};
 
-const int multiplexAPin = 1;
-const int multiplexBPin = 2;
-const int multiplexCPin = 3;
-const int chipSelect = 0;
+const int multiplexAPin = 0;
+const int multiplexBPin = 1;
+const int multiplexCPin = 2;
+const int chipSelect = 3;
 
 const int propdelay = 10;
 
@@ -123,8 +123,8 @@ class Keyboard {
     pinMode(multiplexCPin, OUTPUT);
     pinMode(chipSelect, OUTPUT);
 
-    pinMode(4, OUTPUT);
-    digitalWrite(4, LOW);
+    pinMode(12, OUTPUT);
+    digitalWrite(12, LOW);
 
     for (int i = 0; i < 8; i++) {
       pinMode(inputs[i], INPUT_PULLUP);
