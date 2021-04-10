@@ -119,6 +119,23 @@ public:
     this->updateOscillatorParameters();
   }
 
+  void setLfoSpeed(float frequency) {
+    this->lfo.frequency(frequency);
+    this->lfoOffset.frequency(frequency);
+  }
+
+  void setLfoAmplitude(float amplitude) {
+    this->lfo.amplitude(amplitude);
+  }
+
+  void setBitCrush(int bits) {
+    this->bitcrusher.bits(bits);
+  }
+
+  void setFilterFrequency(float frequency) {
+    this->filter.frequency(frequency);
+  }
+
   float getLfoLevel() {
     if (this->lfoPeak.available()) {
       this->lastLfoPeakLevel = this->lfoPeak.read();
