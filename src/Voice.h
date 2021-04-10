@@ -21,8 +21,10 @@ public:
 
   Voice() {
     // Start oscillators.
-    this->osc1.begin(1.0, 880, WAVEFORM_SINE);
-    this->osc2.begin(1.0, 100, WAVEFORM_SAWTOOTH);
+    this->osc1.begin(WAVEFORM_SAWTOOTH);
+    this->osc1.amplitude(1.0);
+    this->osc2.begin(WAVEFORM_SINE);
+    this->osc2.amplitude(1.0);
 
     // Connect oscillators to voice mixer.
     this->patchCords.push_back(new AudioConnection(this->osc1, 0, this->mixer, 0));
