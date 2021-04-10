@@ -31,8 +31,8 @@ public:
     this->patchCords.push_back(new AudioConnection(this->osc2, 0, this->mixer, 1));
 
     // Setup mixer.
-    this->mixer.gain(0, 1.0);
-    this->mixer.gain(1, 1.0);
+    this->mixer.gain(0, 0.5);
+    this->mixer.gain(1, 0.5);
 
     // Connect mixer to envelope.
     this->patchCords.push_back(new AudioConnection(this->mixer, 0, this->env, 0));
