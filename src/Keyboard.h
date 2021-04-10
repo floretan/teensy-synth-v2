@@ -78,8 +78,7 @@ class Keyboard {
           if (velocity < 0) {
             velocity = 0;
           }
-
-          this->noteOnCallback(0, keys[key_index].midi_note, 0);
+          this->noteOnCallback(0, keys[key_index].midi_note, velocity);
         }
 
         if (!switchB) {
