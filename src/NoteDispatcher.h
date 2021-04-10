@@ -10,10 +10,11 @@ using namespace std;
 enum NoteDispatcherMode {
   POLYPHONIC,
   MONOPHONIC,
+  LEGATO,
 };
 
 class NoteDispatcher {
-  using NoteCallback = void (*)(int voice, int note, int velocity);
+  using NoteCallback = void (*)(int voice, int note, int velocity, bool isFirstOrLast);
 
   struct NoteEntry {
     int note;
@@ -44,12 +45,13 @@ private:
   }
 
   int getNextVoice(int note) {
-    if (this->mode == NoteDispatcherMode::MONOPHONIC) {
+    if (this->mode == NoteDispatcherMode::MONOPHONIC || this->mode == NoteDispatcherMode::LEGATO) {
       return 0;
     }
 
     // Find the next available voice index that isn't playing.
     for (int voiceIndex = 0; voiceIndex < this->voiceCount; voiceIndex++) {
+
       bool isUsed = false;
       for (auto &entry : this->entries) {
         if (entry.voiceIndex == voiceIndex && entry.isPlaying) {
@@ -67,7 +69,7 @@ private:
     // Nothing available, use the voice of the oldest used entry.
     auto entry = this->entries.front();
     entry.isPlaying = false;
-    this->noteOffCallback(entry.voiceIndex, entry.note, 0);
+    this->noteOffCallback(entry.voiceIndex, entry.note, 0, false);
     return entry.voiceIndex;
   }
 
@@ -103,7 +105,7 @@ public:
     // Remove any key which isn't currently pressed.
     for (auto entry = this->entries.begin(); entry != this->entries.end(); ) {
       if (!entry->isPressed) {
-        this->noteOffCallback(entry->voiceIndex, entry->note, 0);
+        this->noteOffCallback(entry->voiceIndex, entry->note, 0, this->entries.size() == 1);
         this->entries.erase(entry++);
       }
       else {
@@ -136,7 +138,7 @@ void NoteDispatcher::pressNote(int note, int velocity) {
     // Stop the previously playing note.
     auto lastEntry = this->entries.back();
     lastEntry.isPlaying = false;
-    this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity);
+    this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity, false);
   }
 
   NoteDispatcher::NoteEntry entry = NoteDispatcher::NoteEntry();
@@ -147,7 +149,7 @@ void NoteDispatcher::pressNote(int note, int velocity) {
   entry.isPlaying = true;
 
   this->entries.push_back(entry);
-  this->noteOnCallback(entry.voiceIndex, note, velocity);
+  this->noteOnCallback(entry.voiceIndex, note, velocity, this->entries.size() == 1);
 }
 
 void NoteDispatcher::releaseNote(int note) {
@@ -159,7 +161,7 @@ void NoteDispatcher::releaseNote(int note) {
         entry++;
       }
       else {
-        this->noteOffCallback(entry->voiceIndex, entry->note, 0);
+        this->noteOffCallback(entry->voiceIndex, entry->note, 0, this->entries.size() == 1);
         this->entries.erase(entry++);
       }
     }
@@ -168,12 +170,12 @@ void NoteDispatcher::releaseNote(int note) {
     }
   }
 
-  if (this->mode == NoteDispatcherMode::MONOPHONIC) {
+  if (this->mode == NoteDispatcherMode::MONOPHONIC || this->mode == NoteDispatcherMode::LEGATO) {
     // Go back to playing last pressed note.
     if (!this->entries.empty()) {
       auto lastEntry = this->entries.back();
       lastEntry.isPlaying = true;
-      this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity);
+      this->noteOnCallback(lastEntry.voiceIndex, lastEntry.note, lastEntry.velocity, false);
     }
   }
 }
