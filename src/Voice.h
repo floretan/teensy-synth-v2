@@ -21,9 +21,9 @@ public:
 
   Voice() {
     // Start oscillators.
-    this->osc1.begin(WAVEFORM_SAWTOOTH);
+    this->osc1.begin(WAVEFORM_BANDLIMIT_SAWTOOTH);
     this->osc1.amplitude(1.0);
-    this->osc2.begin(WAVEFORM_SINE);
+    this->osc2.begin(WAVEFORM_BANDLIMIT_SQUARE);
     this->osc2.amplitude(1.0);
 
     // Connect oscillators to voice mixer.
@@ -36,10 +36,10 @@ public:
 
     // Connect mixer to envelope.
     this->patchCords.push_back(new AudioConnection(this->mixer, 0, this->env, 0));
-    this->env.attack(20);
-    this->env.decay(100);
-    this->env.sustain(0.7);
-    this->env.release(300);
+    this->env.attack(2);
+    this->env.decay(200);
+    this->env.sustain(0.6);
+    this->env.release(30);
   };
   ~Voice() {
 
