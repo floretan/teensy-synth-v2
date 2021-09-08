@@ -13,10 +13,12 @@ using namespace std;
 
 class Synth {
 private:
+  NoteDispatcherMode mode = NoteDispatcherMode::POLYPHONIC;
   float detuneAmount = 1.0;
 
   AudioSynthWaveformDc noteInput;
-  AudioSynthWaveformDc pitchBend; 
+  int glide = 100;
+  AudioSynthWaveformDc pitchBend;
   AudioSynthWaveform lfo;
   AudioSynthWaveform lfoOffset;
   AudioAnalyzePeak lfoPeak;
@@ -103,15 +105,29 @@ public:
 
   };
 
-  void playNote(int voice, int note, int velocity) {
-    this->voices[voice]->currentNote = note;
-    this->updateOscillatorParameters();
-    this->voices[voice]->env.noteOn();
+  void playNote(int voice, int note, int velocity, bool isFirstOrLast) {
 
-    //float freqMod = (((note - 64) / 12.0) / freqModRange);
+    if (this->mode == POLYPHONIC) {
+      this->voices[voice]->currentNote = note;
+      this->updateOscillatorParameters();
+      this->voices[voice]->env.noteOn();
+    }
+    else if (this->mode == LEGATO) {
+      // Fix the note, we will use frequency modulation to modulate the pitch.
+      this->voices[voice]->currentNote = 64;
+      this->updateOscillatorParameters();
+      float freqMod = (((note - 64) / 12.0) / freqModRange);
+      this->noteInput.amplitude(freqMod, this->glide);
+
+      if (isFirstOrLast) {
+        this->voices[voice]->env.noteOn();
+      }
+    }
   }
-  void releaseNote(int voice, int note, int velocity) {
-    this->voices[voice]->env.noteOff();
+  void releaseNote(int voice, int note, int velocity, bool isFirstOrLast) {
+    if (this->mode != LEGATO || isFirstOrLast) {
+      this->voices[voice]->env.noteOff();
+    }
   }
 
   void setDetune(float amount) {

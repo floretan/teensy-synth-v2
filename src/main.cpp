@@ -46,11 +46,11 @@ void midiControlChange(byte channel, byte control, byte value) {
 }
 
 // Callback to handle notes being played and released.
-void playNote(int voice, int note, int velocity) {
-  synth.playNote(voice, note, velocity);
+void playNote(int voice, int note, int velocity, bool isFirstOrLast) {
+  synth.playNote(voice, note, velocity, isFirstOrLast);
 }
-void releaseNote(int voice, int note, int velocity) {
-  synth.releaseNote(voice, note, velocity);
+void releaseNote(int voice, int note, int velocity, bool isFirstOrLast) {
+  synth.releaseNote(voice, note, velocity, isFirstOrLast);
 }
 
 void setup(void) {
