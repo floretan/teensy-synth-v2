@@ -7,7 +7,7 @@
 #include "effect_platervbstereo.h"
 
 #define voiceCount 8
-#define freqModRange 4
+#define freqModRange 8
 
 using namespace std;
 
@@ -23,7 +23,7 @@ private:
   AudioSynthWaveform lfoOffset;
   AudioAnalyzePeak lfoPeak;
   float lastLfoPeakLevel = 0;
-  AudioMixer4 modulation;
+  AudioMixer4 pitchModulation;
 
   // Mix 16 voices down to 4 mixers which are then mixed together.
   vector<Voice*> voices;
@@ -54,10 +54,18 @@ private:
 public:
   Synth() {
     // Define modulation sources and mix them together.
-    this->patchCords.push_back(new AudioConnection(this->noteInput, 0, this->modulation, 0));
-    this->patchCords.push_back(new AudioConnection(this->pitchBend, 0, this->modulation, 1));
-    this->patchCords.push_back(new AudioConnection(this->lfo, 0, this->modulation, 2));
+    this->lfo.begin(1.0, 0.5, WAVEFORM_SINE);
+    this->lfoOffset.offset(0.5);
+    this->lfoOffset.begin(0.5, 0.5, WAVEFORM_SINE);
 
+    // Connect the LFO to the LFO visualizer.
+    this->patchCords.push_back(new AudioConnection(this->lfo, 0, this->lfoPeak, 0));
+
+    this->pitchModulation.gain(0, 0.01);
+    this->patchCords.push_back(new AudioConnection(this->lfo, 0, this->pitchModulation, 0));
+    this->patchCords.push_back(new AudioConnection(this->noteInput, 0, this->pitchModulation, 1));
+    this->patchCords.push_back(new AudioConnection(this->pitchBend, 0, this->pitchModulation, 2));
+    
     // Define the individual synth voices.
     for (int i = 0; i < voiceCount; i++) {
       int voiceMixerIndex = i / 4;
@@ -69,10 +77,10 @@ public:
       }
       auto voice = new Voice();
       voices.push_back(voice);
-      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc1, 0));
-      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc1, 1));
-      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc2, 0));
-      this->patchCords.push_back(new AudioConnection(this->modulation, 0, voice->osc2, 1));
+      this->patchCords.push_back(new AudioConnection(this->pitchModulation, 0, voice->osc1, 0));
+      this->patchCords.push_back(new AudioConnection(this->pitchModulation, 0, voice->osc1, 1));
+      this->patchCords.push_back(new AudioConnection(this->pitchModulation, 0, voice->osc2, 0));
+      this->patchCords.push_back(new AudioConnection(this->pitchModulation, 0, voice->osc2, 1));
       this->patchCords.push_back(new AudioConnection(voice->env, 0, *(this->voiceMixers[voiceMixerIndex]), i % 4));
       this->voiceMixers[voiceMixerIndex]->gain(i % 4, 0.25);
     }
