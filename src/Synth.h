@@ -30,7 +30,7 @@ private:
   vector<AudioMixer4*> voiceMixers;
 
   AudioMixer4 finalVoiceMixer;
-  AudioFilterStateVariable filter;
+  AudioFilterLadder filter;
   AudioEffectMultiply ampMod;
   AudioEffectBitcrusher bitcrusher;
   AudioEffectPlateReverb reverb;
