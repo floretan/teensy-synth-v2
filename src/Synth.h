@@ -92,7 +92,10 @@ public:
     this->patchCords.push_back(new AudioConnection(this->bitcrusher, 0, this->filter, 0));
     this->bitcrusher.bits(16);
 
-    this->patchCords.push_back(new AudioConnection(this->filter, 0, this->delayMixer, 0));
+    this->patchCords.push_back(new AudioConnection(this->filter, 0, this->ampMod, 0));
+    this->patchCords.push_back(new AudioConnection(this->lfoOffset, 0, this->ampMod, 1));
+
+    this->patchCords.push_back(new AudioConnection(this->ampMod, 0, this->delayMixer, 0));
     this->patchCords.push_back(new AudioConnection(this->delayMixer, 0, this->delay, 0));
     this->patchCords.push_back(new AudioConnection(this->delay, 0, this->delayMixer, 1));
 
@@ -164,6 +167,8 @@ public:
 
   void setLfoAmplitude(float amplitude) {
     this->lfo.amplitude(amplitude);
+    this->lfoOffset.offset(1-amplitude/2);
+    this->lfoOffset.amplitude(amplitude/2);
   }
 
   void setBitCrush(int bits) {
