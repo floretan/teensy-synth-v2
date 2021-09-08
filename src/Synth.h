@@ -130,6 +130,20 @@ public:
     }
   }
 
+  void setMix(float mix) {
+    if (mix > 1.0) {
+      mix = 1.0;
+    }
+    if (mix < 0.0) {
+      mix = 0.0;
+    }
+
+    for (auto voice : this->voices) {
+      voice->mixer.gain(0, mix);
+      voice->mixer.gain(1, 1.0 - mix);
+    }
+  }
+
   void setDetune(float amount) {
     this->detuneAmount = amount;
     this->updateOscillatorParameters();
@@ -150,6 +164,10 @@ public:
 
   void setFilterFrequency(float frequency) {
     this->filter.frequency(frequency);
+  }
+
+  void setFilterResonance(float level) {
+    this->filter.resonance(level);
   }
 
   float getLfoLevel() {
